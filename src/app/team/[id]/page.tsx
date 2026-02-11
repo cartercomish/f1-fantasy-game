@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { getTeamById } from "@/lib/data";
+import { getTeamByIdAsync } from "@/lib/data";
 import { notFound } from "next/navigation";
 
 export default async function TeamPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const team = getTeamById(id);
+  const team = await getTeamByIdAsync(id);
   if (!team) notFound();
 
   return (

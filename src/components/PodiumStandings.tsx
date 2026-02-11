@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { getTeams } from "@/lib/data";
+import type { FantasyTeam } from "@/lib/types";
 
-export function PodiumStandings() {
-  const teams = getTeams().sort((a, b) => b.totalPoints - a.totalPoints);
-  const [first, second, third] = teams;
+export function PodiumStandings({ teams }: { teams: FantasyTeam[] }) {
+  const sorted = [...teams].sort((a, b) => b.totalPoints - a.totalPoints);
+  const [first, second, third] = sorted;
 
   return (
     <div className="bg-[#1E1E28] rounded-lg border border-white/10 p-8">

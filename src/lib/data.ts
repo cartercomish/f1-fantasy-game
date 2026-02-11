@@ -1,4 +1,6 @@
+import { cache } from "react";
 import type { Driver, Constructor, FantasyTeam, RoundSummary } from "./types";
+import { fetchAllRoundsPoints } from "./espn";
 
 // 2026 season – first race March 7 (Australia)
 const SEASON_YEAR = 2026;
@@ -31,46 +33,41 @@ const ROUNDS: RoundSummary[] = [
   { round: 24, roundName: "Abu Dhabi", date: "2026-12-06", espnRaceId: "600057451" },
 ];
 
-// 2026 driver grid (11 teams, 22 drivers) – season not started, all points = 0
-const DRIVER_POINTS_BY_ROUND: Record<string, number[]> = {
-  norris: ROUNDS.map(() => 0),
-  piastri: ROUNDS.map(() => 0),
-  russell: ROUNDS.map(() => 0),
-  antonelli: ROUNDS.map(() => 0),
-  max_verstappen: ROUNDS.map(() => 0),
-  hadjar: ROUNDS.map(() => 0),
-  leclerc: ROUNDS.map(() => 0),
-  hamilton: ROUNDS.map(() => 0),
-  sainz: ROUNDS.map(() => 0),
-  albon: ROUNDS.map(() => 0),
-  lawson: ROUNDS.map(() => 0),
-  lindblad: ROUNDS.map(() => 0),
-  alonso: ROUNDS.map(() => 0),
-  stroll: ROUNDS.map(() => 0),
-  ocon: ROUNDS.map(() => 0),
-  bearman: ROUNDS.map(() => 0),
-  hulkenberg: ROUNDS.map(() => 0),
-  bortoleto: ROUNDS.map(() => 0),
-  gasly: ROUNDS.map(() => 0),
-  colapinto: ROUNDS.map(() => 0),
-  perez: ROUNDS.map(() => 0),
-  bottas: ROUNDS.map(() => 0),
-};
+// 2026 driver grid (11 teams, 22 drivers)
+const DRIVER_IDS = [
+  "norris", "piastri", "russell", "antonelli", "max_verstappen", "hadjar",
+  "leclerc", "hamilton", "sainz", "albon", "lawson", "lindblad",
+  "alonso", "stroll", "ocon", "bearman", "hulkenberg", "bortoleto",
+  "gasly", "colapinto", "perez", "bottas",
+] as const;
 
-// 2026 constructors (11 teams)
-const CONSTRUCTOR_POINTS_BY_ROUND: Record<string, number[]> = {
-  mclaren: ROUNDS.map(() => 0),
-  mercedes: ROUNDS.map(() => 0),
-  red_bull: ROUNDS.map(() => 0),
-  ferrari: ROUNDS.map(() => 0),
-  williams: ROUNDS.map(() => 0),
-  racing_bulls: ROUNDS.map(() => 0),
-  aston_martin: ROUNDS.map(() => 0),
-  haas: ROUNDS.map(() => 0),
-  audi: ROUNDS.map(() => 0),
-  alpine: ROUNDS.map(() => 0),
-  cadillac: ROUNDS.map(() => 0),
-};
+function buildDriverPointsByRound(cache: Record<string, Record<string, number>>): Record<string, number[]> {
+  const base = Object.fromEntries(DRIVER_IDS.map((id) => [id, ROUNDS.map(() => 0)]));
+  const rounds = cache ?? {};
+  for (const [roundKey, driverPts] of Object.entries(rounds)) {
+    const roundIdx = parseInt(roundKey, 10) - 1;
+    if (roundIdx >= 0 && roundIdx < ROUNDS.length) {
+      for (const [driverId, pts] of Object.entries(driverPts)) {
+        if (base[driverId]) {
+          base[driverId][roundIdx] = pts;
+        }
+      }
+    }
+  }
+  return base;
+}
+
+// 2026 constructors (11 teams) – points = sum of both drivers (not yet implemented)
+const CONSTRUCTOR_IDS = [
+  "mclaren", "mercedes", "red_bull", "ferrari", "williams", "racing_bulls",
+  "aston_martin", "haas", "audi", "alpine", "cadillac",
+] as const;
+
+function buildConstructorPointsByRound(driverPointsByRound: Record<string, number[]>): Record<string, number[]> {
+  const base = Object.fromEntries(CONSTRUCTOR_IDS.map((id) => [id, ROUNDS.map(() => 0)]));
+  // Constructor scoring not yet implemented – leave zeros
+  return base;
+}
 
 const DRIVER_META: Record<string, { name: string; shortName: string; teamId: string; teamName: string; teamColour?: string }> = {
   norris: { name: "Lando Norris", shortName: "NOR", teamId: "mclaren", teamName: "McLaren", teamColour: "#F58020" },
@@ -133,33 +130,39 @@ const TEAM_ROSTERS = [
   },
 ];
 
+const getPointsCache = cache(async () => {
+  const rounds = await fetchAllRoundsPoints(ROUNDS);
+  return rounds;
+});
+
 function sum(arr: number[]): number {
   return arr.reduce((a, b) => a + b, 0);
-}
-
-function getDriverPoints(driverId: string): number {
-  const pts = DRIVER_POINTS_BY_ROUND[driverId];
-  return pts ? sum(pts) : 0;
-}
-
-function getConstructorPoints(constructorId: string): number {
-  const pts = CONSTRUCTOR_POINTS_BY_ROUND[constructorId];
-  return pts ? sum(pts) : 0;
-}
-
-function getDriverPointsByRound(driverId: string): number[] {
-  return DRIVER_POINTS_BY_ROUND[driverId] ?? [];
-}
-
-function getConstructorPointsByRound(constructorId: string): number[] {
-  return CONSTRUCTOR_POINTS_BY_ROUND[constructorId] ?? [];
 }
 
 export function getSeasonYear(): number {
   return SEASON_YEAR;
 }
 
-export function getTeams(): FantasyTeam[] {
+export function getRounds(): RoundSummary[] {
+  return ROUNDS;
+}
+
+export async function getTeamsAsync(): Promise<FantasyTeam[]> {
+  const pointsCache = await getPointsCache();
+  const driverPointsByRound = buildDriverPointsByRound(pointsCache);
+  const constructorPointsByRound = buildConstructorPointsByRound(driverPointsByRound);
+
+  const getDriverPoints = (driverId: string) => {
+    const pts = driverPointsByRound[driverId];
+    return pts ? sum(pts) : 0;
+  };
+  const getConstructorPoints = (constructorId: string) => {
+    const pts = constructorPointsByRound[constructorId];
+    return pts ? sum(pts) : 0;
+  };
+  const getDriverPointsByRound = (driverId: string) => driverPointsByRound[driverId] ?? [];
+  const getConstructorPointsByRound = (constructorId: string) => constructorPointsByRound[constructorId] ?? [];
+
   return TEAM_ROSTERS.map((roster) => {
     const drivers: Driver[] = roster.driverIds.map((id) => {
       const meta = DRIVER_META[id];
@@ -207,19 +210,16 @@ export function getTeams(): FantasyTeam[] {
   });
 }
 
-export function getTeamById(id: string): FantasyTeam | undefined {
-  return getTeams().find((t) => t.id === id);
+export async function getTeamByIdAsync(id: string): Promise<FantasyTeam | undefined> {
+  const teams = await getTeamsAsync();
+  return teams.find((t) => t.id === id);
 }
 
-export function getRounds(): RoundSummary[] {
-  return ROUNDS;
-}
-
-// All drafted drivers (across all teams)
-export function getAllDraftedDrivers(): Driver[] {
+export async function getTopAndBottomDriversAsync(): Promise<{ top: Driver[]; bottom: Driver[] }> {
+  const teams = await getTeamsAsync();
   const seen = new Set<string>();
   const drivers: Driver[] = [];
-  for (const team of getTeams()) {
+  for (const team of teams) {
     for (const d of team.drivers) {
       if (!seen.has(d.id)) {
         seen.add(d.id);
@@ -227,23 +227,18 @@ export function getAllDraftedDrivers(): Driver[] {
       }
     }
   }
-  return drivers;
-}
-
-// Top 3 and bottom 3 drafted drivers
-export function getTopAndBottomDrivers(): { top: Driver[]; bottom: Driver[] } {
-  const drafted = getAllDraftedDrivers().sort((a, b) => b.points - a.points);
+  const drafted = drivers.sort((a, b) => b.points - a.points);
   return {
     top: drafted.slice(0, 3),
     bottom: drafted.slice(-3),
   };
 }
 
-// All drafted constructors
-export function getAllDraftedConstructors(): Constructor[] {
+export async function getTopAndBottomConstructorsAsync(): Promise<{ top: Constructor[]; bottom: Constructor[] }> {
+  const teams = await getTeamsAsync();
   const seen = new Set<string>();
   const constructors: Constructor[] = [];
-  for (const team of getTeams()) {
+  for (const team of teams) {
     for (const c of team.constructors) {
       if (!seen.has(c.id)) {
         seen.add(c.id);
@@ -251,11 +246,7 @@ export function getAllDraftedConstructors(): Constructor[] {
       }
     }
   }
-  return constructors;
-}
-
-export function getTopAndBottomConstructors(): { top: Constructor[]; bottom: Constructor[] } {
-  const drafted = getAllDraftedConstructors().sort((a, b) => b.points - a.points);
+  const drafted = constructors.sort((a, b) => b.points - a.points);
   return {
     top: drafted.slice(0, 3),
     bottom: drafted.slice(-3),

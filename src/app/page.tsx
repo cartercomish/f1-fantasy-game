@@ -1,22 +1,31 @@
 import { PointsGraph } from "@/components/PointsGraph";
 import { DriverConstructorLists } from "@/components/DriverConstructorLists";
 import { PodiumStandings } from "@/components/PodiumStandings";
-import { getSeasonYear } from "@/lib/data";
+import { getTeamsAsync, getTopAndBottomDriversAsync, getTopAndBottomConstructorsAsync, getRounds } from "@/lib/data";
 
-export default function DashboardPage() {
-  const seasonYear = getSeasonYear();
+export default async function DashboardPage() {
+  const [teams, { top: topDrivers, bottom: bottomDrivers }, { top: topConstructors, bottom: bottomConstructors }] =
+    await Promise.all([
+      getTeamsAsync(),
+      getTopAndBottomDriversAsync(),
+      getTopAndBottomConstructorsAsync(),
+    ]);
+  const rounds = getRounds();
+
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-        <span className="text-[#8F8F9D] text-sm">F1 {seasonYear} – Season starts March 7</span>
-      </div>
+      <h1 className="text-3xl font-bold text-white">Dashboard</h1>
 
-      <PodiumStandings />
+      <PodiumStandings teams={teams} />
 
-      <PointsGraph />
+      <PointsGraph teams={teams} rounds={rounds} />
 
-      <DriverConstructorLists />
+      <DriverConstructorLists
+        topDrivers={topDrivers}
+        bottomDrivers={bottomDrivers}
+        topConstructors={topConstructors}
+        bottomConstructors={bottomConstructors}
+      />
     </div>
   );
 }

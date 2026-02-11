@@ -1,0 +1,22 @@
+{
+  "_comment": "Driver points by round. Keys are round numbers (1-24). Update via /api/refresh POST or manual edit.",
+  "rounds": {
+    "1": {
+      "norris": 25,
+      "max_verstappen": 22,
+      "russell": 20,
+      "antonelli": 19,
+      "albon": 18,
+      "stroll": 17,
+      "hulkenberg": 16,
+      "leclerc": 15,
+      "piastri": 14,
+      "hamilton": 13,
+      "gasly": 12,
+      "lawson": 11,
+      "ocon": 10,
+      "bearman": 9,
+      "hadjar": 8
+    }
+  }
+}
