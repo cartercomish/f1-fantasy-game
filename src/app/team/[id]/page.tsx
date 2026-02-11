@@ -43,7 +43,13 @@ export default async function TeamPage({ params }: { params: Promise<{ id: strin
           <div className="space-y-3">
             {team.constructors.map((c) => (
               <div key={c.id} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-                <span className="font-medium">{c.name}</span>
+                <div className="flex items-center gap-3">
+                  <span
+                    className="w-2 h-2 rounded-full shrink-0"
+                    style={{ backgroundColor: c.teamColour ?? "#8F8F9D" }}
+                  />
+                  <span className="font-medium">{c.name}</span>
+                </div>
                 <span className="font-bold text-[#FF1E00]">{c.points} PTS</span>
               </div>
             ))}

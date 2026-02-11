@@ -12,6 +12,7 @@ export interface Constructor {
   id: string;
   name: string;
   points: number;
+  teamColour?: string;
 }
 
 export interface FantasyTeam {

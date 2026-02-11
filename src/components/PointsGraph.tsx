@@ -31,7 +31,7 @@ export function PointsGraph({ teams, rounds }: { teams: FantasyTeam[]; rounds: R
 
   return (
     <div className="bg-[#1E1E28] rounded-lg border border-white/10 p-4 sm:p-6">
-      <h2 className="text-lg font-semibold mb-4 text-white">Points Over Time</h2>
+      <h2 className="text-lg font-semibold mb-4 text-white">2026 Season Points Totals</h2>
       <div className="w-full min-w-0" style={{ height: 320, minHeight: 320 }}>
         <ResponsiveContainer width="100%" height={320} minWidth={0}>
           <LineChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>

@@ -69,29 +69,29 @@ function buildConstructorPointsByRound(driverPointsByRound: Record<string, numbe
   return base;
 }
 
-const DRIVER_META: Record<string, { name: string; shortName: string; teamId: string; teamName: string; teamColour?: string }> = {
-  norris: { name: "Lando Norris", shortName: "NOR", teamId: "mclaren", teamName: "McLaren", teamColour: "#F58020" },
-  piastri: { name: "Oscar Piastri", shortName: "PIA", teamId: "mclaren", teamName: "McLaren", teamColour: "#F58020" },
-  russell: { name: "George Russell", shortName: "RUS", teamId: "mercedes", teamName: "Mercedes", teamColour: "#03DAC6" },
-  antonelli: { name: "Kimi Antonelli", shortName: "ANT", teamId: "mercedes", teamName: "Mercedes", teamColour: "#03DAC6" },
-  max_verstappen: { name: "Max Verstappen", shortName: "VER", teamId: "red_bull", teamName: "Red Bull Racing", teamColour: "#3671C6" },
-  hadjar: { name: "Isack Hadjar", shortName: "HAD", teamId: "red_bull", teamName: "Red Bull Racing", teamColour: "#3671C6" },
-  leclerc: { name: "Charles Leclerc", shortName: "LEC", teamId: "ferrari", teamName: "Ferrari", teamColour: "#E8002D" },
-  hamilton: { name: "Lewis Hamilton", shortName: "HAM", teamId: "ferrari", teamName: "Ferrari", teamColour: "#E8002D" },
-  sainz: { name: "Carlos Sainz", shortName: "SAI", teamId: "williams", teamName: "Williams", teamColour: "#37BEDD" },
-  albon: { name: "Alex Albon", shortName: "ALB", teamId: "williams", teamName: "Williams", teamColour: "#37BEDD" },
-  lawson: { name: "Liam Lawson", shortName: "LAW", teamId: "racing_bulls", teamName: "Racing Bulls", teamColour: "#6692FF" },
-  lindblad: { name: "Arvid Lindblad", shortName: "LIN", teamId: "racing_bulls", teamName: "Racing Bulls", teamColour: "#6692FF" },
-  alonso: { name: "Fernando Alonso", shortName: "ALO", teamId: "aston_martin", teamName: "Aston Martin", teamColour: "#006F62" },
-  stroll: { name: "Lance Stroll", shortName: "STR", teamId: "aston_martin", teamName: "Aston Martin", teamColour: "#006F62" },
-  ocon: { name: "Esteban Ocon", shortName: "OCO", teamId: "haas", teamName: "Haas", teamColour: "#FFFFFF" },
-  bearman: { name: "Oliver Bearman", shortName: "BEA", teamId: "haas", teamName: "Haas", teamColour: "#FFFFFF" },
-  hulkenberg: { name: "Nico Hülkenberg", shortName: "HUL", teamId: "audi", teamName: "Audi", teamColour: "#BB0A30" },
-  bortoleto: { name: "Gabriel Bortoleto", shortName: "BOR", teamId: "audi", teamName: "Audi", teamColour: "#BB0A30" },
-  gasly: { name: "Pierre Gasly", shortName: "GAS", teamId: "alpine", teamName: "Alpine", teamColour: "#FE8002" },
-  colapinto: { name: "Franco Colapinto", shortName: "COL", teamId: "alpine", teamName: "Alpine", teamColour: "#FE8002" },
-  perez: { name: "Sergio Pérez", shortName: "PER", teamId: "cadillac", teamName: "Cadillac", teamColour: "#1A1A1A" },
-  bottas: { name: "Valtteri Bottas", shortName: "BOT", teamId: "cadillac", teamName: "Cadillac", teamColour: "#1A1A1A" },
+const DRIVER_META: Record<string, { name: string; shortName: string; teamId: string; teamName: string }> = {
+  norris: { name: "Lando Norris", shortName: "NOR", teamId: "mclaren", teamName: "McLaren" },
+  piastri: { name: "Oscar Piastri", shortName: "PIA", teamId: "mclaren", teamName: "McLaren" },
+  russell: { name: "George Russell", shortName: "RUS", teamId: "mercedes", teamName: "Mercedes" },
+  antonelli: { name: "Kimi Antonelli", shortName: "ANT", teamId: "mercedes", teamName: "Mercedes" },
+  max_verstappen: { name: "Max Verstappen", shortName: "VER", teamId: "red_bull", teamName: "Red Bull Racing" },
+  hadjar: { name: "Isack Hadjar", shortName: "HAD", teamId: "red_bull", teamName: "Red Bull Racing" },
+  leclerc: { name: "Charles Leclerc", shortName: "LEC", teamId: "ferrari", teamName: "Ferrari" },
+  hamilton: { name: "Lewis Hamilton", shortName: "HAM", teamId: "ferrari", teamName: "Ferrari" },
+  sainz: { name: "Carlos Sainz", shortName: "SAI", teamId: "williams", teamName: "Williams" },
+  albon: { name: "Alex Albon", shortName: "ALB", teamId: "williams", teamName: "Williams" },
+  lawson: { name: "Liam Lawson", shortName: "LAW", teamId: "racing_bulls", teamName: "Racing Bulls" },
+  lindblad: { name: "Arvid Lindblad", shortName: "LIN", teamId: "racing_bulls", teamName: "Racing Bulls" },
+  alonso: { name: "Fernando Alonso", shortName: "ALO", teamId: "aston_martin", teamName: "Aston Martin" },
+  stroll: { name: "Lance Stroll", shortName: "STR", teamId: "aston_martin", teamName: "Aston Martin" },
+  ocon: { name: "Esteban Ocon", shortName: "OCO", teamId: "haas", teamName: "Haas" },
+  bearman: { name: "Oliver Bearman", shortName: "BEA", teamId: "haas", teamName: "Haas" },
+  hulkenberg: { name: "Nico Hülkenberg", shortName: "HUL", teamId: "audi", teamName: "Audi" },
+  bortoleto: { name: "Gabriel Bortoleto", shortName: "BOR", teamId: "audi", teamName: "Audi" },
+  gasly: { name: "Pierre Gasly", shortName: "GAS", teamId: "alpine", teamName: "Alpine" },
+  colapinto: { name: "Franco Colapinto", shortName: "COL", teamId: "williams", teamName: "Williams" },
+  perez: { name: "Sergio Pérez", shortName: "PER", teamId: "cadillac", teamName: "Cadillac" },
+  bottas: { name: "Valtteri Bottas", shortName: "BOT", teamId: "cadillac", teamName: "Cadillac" },
 };
 
 const CONSTRUCTOR_META: Record<string, string> = {
@@ -106,6 +106,20 @@ const CONSTRUCTOR_META: Record<string, string> = {
   audi: "Audi",
   alpine: "Alpine",
   cadillac: "Cadillac",
+};
+
+const CONSTRUCTOR_COLOURS: Record<string, string> = {
+  mclaren: "#F58020",
+  mercedes: "#03DAC6",
+  red_bull: "#3671C6",
+  ferrari: "#E8002D",
+  williams: "#005AFF",
+  racing_bulls: "#6692FF",
+  aston_martin: "#006F62",
+  haas: "#FFFFFF",
+  audi: "#BB0A30",
+  alpine: "#FE8002",
+  cadillac: "#1A1A1A",
 };
 
 // Fantasy team rosters (3 teams, 7 drivers + 3 constructors each) – sample for 2026
@@ -166,14 +180,15 @@ export async function getTeamsAsync(): Promise<FantasyTeam[]> {
   return TEAM_ROSTERS.map((roster) => {
     const drivers: Driver[] = roster.driverIds.map((id) => {
       const meta = DRIVER_META[id];
+      const teamId = meta?.teamId ?? "";
       const points = getDriverPoints(id);
       return {
         id,
         name: meta?.name ?? id,
         shortName: meta?.shortName ?? id.slice(0, 3).toUpperCase(),
-        teamId: meta?.teamId ?? "",
+        teamId,
         teamName: meta?.teamName ?? "",
-        teamColour: meta?.teamColour,
+        teamColour: teamId ? CONSTRUCTOR_COLOURS[teamId] : undefined,
         points,
       };
     });
@@ -181,6 +196,7 @@ export async function getTeamsAsync(): Promise<FantasyTeam[]> {
       id,
       name: CONSTRUCTOR_META[id] ?? id,
       points: getConstructorPoints(id),
+      teamColour: CONSTRUCTOR_COLOURS[id],
     }));
     const totalPoints = drivers.reduce((a, d) => a + d.points, 0) + constructors.reduce((a, c) => a + c.points, 0);
 
