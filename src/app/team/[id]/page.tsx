@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getTeamByIdAsync } from "@/lib/data";
 import { notFound } from "next/navigation";
 
@@ -13,9 +14,16 @@ export default async function TeamPage({ params }: { params: Promise<{ id: strin
         ← Back to Dashboard
       </Link>
 
-      <div>
-        <h1 className="text-3xl font-bold text-white">{team.ownerName}</h1>
-        <p className="text-[#8F8F9D] mt-1">Total: <span className="text-[#FF1E00] font-bold">{team.totalPoints} PTS</span></p>
+      <div className="flex items-center gap-4">
+        {team.logoUrl && (
+          <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0 flex-shrink-0">
+            <Image src={team.logoUrl} alt={team.ownerName} fill className="object-cover object-center" />
+          </div>
+        )}
+        <div>
+          <h1 className="text-3xl font-bold text-white">{team.ownerName}</h1>
+          <p className="text-[#8F8F9D] mt-1">Total: <span className="text-[#FF1E00] font-bold">{team.totalPoints} PTS</span></p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

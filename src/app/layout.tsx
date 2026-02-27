@@ -29,7 +29,6 @@ export default function RootLayout({
             <div className="flex gap-6 text-sm text-[#8F8F9D]">
               <a href="/" className="hover:text-white transition-colors">Dashboard</a>
               <a href="/rules" className="hover:text-white transition-colors">Rules</a>
-              <a href="/admin" className="hover:text-white transition-colors">Admin</a>
             </div>
           </nav>
         </header>

@@ -46,7 +46,7 @@ export default function RulesPage() {
         <ul className="text-[#8F8F9D] space-y-2 list-disc list-inside">
           <li>7 drivers per team</li>
           <li>3 constructors per team</li>
-          <li>Constructor points = sum of both drivers&apos; points for that team in each race</li>
+          <li>Constructor points = average of both drivers&apos; points for that team in each race</li>
         </ul>
       </section>
     </div>

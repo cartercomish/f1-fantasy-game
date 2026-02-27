@@ -57,15 +57,39 @@ function buildDriverPointsByRound(cache: Record<string, Record<string, number>>)
   return base;
 }
 
-// 2026 constructors (11 teams) – points = sum of both drivers (not yet implemented)
+// 2026 constructors (11 teams) – points = (driver1 + driver2) / 2 per round
 const CONSTRUCTOR_IDS = [
   "mclaren", "mercedes", "red_bull", "ferrari", "williams", "racing_bulls",
   "aston_martin", "haas", "audi", "alpine", "cadillac",
 ] as const;
 
+/** Each F1 constructor's two drivers – used for constructor points = avg of their driver points */
+const CONSTRUCTOR_DRIVERS: Record<string, [string, string]> = {
+  mclaren: ["norris", "piastri"],
+  mercedes: ["russell", "antonelli"],
+  red_bull: ["max_verstappen", "hadjar"],
+  ferrari: ["leclerc", "hamilton"],
+  williams: ["sainz", "albon"],
+  racing_bulls: ["lawson", "lindblad"],
+  aston_martin: ["alonso", "stroll"],
+  haas: ["ocon", "bearman"],
+  audi: ["hulkenberg", "bortoleto"],
+  alpine: ["gasly", "colapinto"],
+  cadillac: ["perez", "bottas"],
+};
+
 function buildConstructorPointsByRound(driverPointsByRound: Record<string, number[]>): Record<string, number[]> {
   const base = Object.fromEntries(CONSTRUCTOR_IDS.map((id) => [id, ROUNDS.map(() => 0)]));
-  // Constructor scoring not yet implemented – leave zeros
+  const drivers = CONSTRUCTOR_DRIVERS;
+  for (const [constructorId, [d1, d2]] of Object.entries(drivers)) {
+    if (!base[constructorId]) continue;
+    const p1 = driverPointsByRound[d1] ?? [];
+    const p2 = driverPointsByRound[d2] ?? [];
+    for (let i = 0; i < ROUNDS.length; i++) {
+      const sum = (p1[i] ?? 0) + (p2[i] ?? 0);
+      base[constructorId][i] = Math.round((sum / 2) * 10) / 10; // avg, 1 decimal
+    }
+  }
   return base;
 }
 
@@ -89,7 +113,7 @@ const DRIVER_META: Record<string, { name: string; shortName: string; teamId: str
   hulkenberg: { name: "Nico Hülkenberg", shortName: "HUL", teamId: "audi", teamName: "Audi" },
   bortoleto: { name: "Gabriel Bortoleto", shortName: "BOR", teamId: "audi", teamName: "Audi" },
   gasly: { name: "Pierre Gasly", shortName: "GAS", teamId: "alpine", teamName: "Alpine" },
-  colapinto: { name: "Franco Colapinto", shortName: "COL", teamId: "williams", teamName: "Williams" },
+  colapinto: { name: "Franco Colapinto", shortName: "COL", teamId: "alpine", teamName: "Alpine" },
   perez: { name: "Sergio Pérez", shortName: "PER", teamId: "cadillac", teamName: "Cadillac" },
   bottas: { name: "Valtteri Bottas", shortName: "BOT", teamId: "cadillac", teamName: "Cadillac" },
 };
@@ -122,27 +146,74 @@ const CONSTRUCTOR_COLOURS: Record<string, string> = {
   cadillac: "#1A1A1A",
 };
 
-// Fantasy team rosters (3 teams, 7 drivers + 3 constructors each) – sample for 2026
-const TEAM_ROSTERS = [
+// Redraft occurs between round 13 (Hungary, July 24-26) and round 14 (Netherlands, Aug 21-23).
+// Period 1: rounds 1-13 (first half). Period 2: rounds 14-24 (second half, after redraft).
+const REDRAFT_AFTER_ROUND = 13;
+
+// Which roster to show on team pages. Change to 2 after the mid-season redraft.
+const DISPLAY_PERIOD: 1 | 2 = 1;
+
+interface TeamRoster {
+  id: string;
+  ownerName: string;
+  logoUrl: string;
+  driverIds: string[];
+  constructorIds: string[];
+}
+
+// Period 1: Initial draft (rounds 1-13)
+const ROSTERS_PERIOD_1: TeamRoster[] = [
   {
     id: "team-1",
-    ownerName: "Team Alpha",
-    driverIds: ["max_verstappen", "norris", "leclerc", "alonso", "lawson", "albon", "gasly"],
-    constructorIds: ["red_bull", "mclaren", "aston_martin"],
+    ownerName: "Logic Gate Racing",
+    logoUrl: "/logic-gate-racing.png",
+    driverIds: ["leclerc", "hamilton", "alonso", "sainz", "bottas", "perez", "stroll"],
+    constructorIds: ["mercedes", "audi", "cadillac"],
   },
   {
     id: "team-2",
-    ownerName: "Team Beta",
-    driverIds: ["piastri", "russell", "sainz", "hamilton", "stroll", "ocon", "hulkenberg"],
-    constructorIds: ["ferrari", "mercedes", "racing_bulls"],
+    ownerName: "Louie's Lead Foot",
+    logoUrl: "/louies-lead-foot.png",
+    driverIds: ["max_verstappen", "piastri", "norris", "gasly", "albon", "bortoleto", "ocon"],
+    constructorIds: ["mclaren", "red_bull", "alpine"],
   },
   {
     id: "team-3",
-    ownerName: "Team Gamma",
-    driverIds: ["hadjar", "antonelli", "bortoleto", "bearman", "lindblad", "colapinto"],
-    constructorIds: ["williams", "haas", "audi"],
+    ownerName: "Wildfire Laps",
+    logoUrl: "/wildfire-laps.png",
+    driverIds: ["russell", "antonelli", "hadjar", "hulkenberg", "lawson", "bearman", "lindblad"],
+    constructorIds: ["ferrari", "aston_martin", "williams"],
   },
 ];
+
+// Period 2: After redraft (rounds 14-24). Update this block after the mid-season redraft.
+const ROSTERS_PERIOD_2: TeamRoster[] = [
+  {
+    id: "team-1",
+    ownerName: "Logic Gate Racing",
+    logoUrl: "/logic-gate-racing.png",
+    driverIds: ["leclerc", "hamilton", "alonso", "sainz", "bottas", "perez", "stroll"],
+    constructorIds: ["mercedes", "audi", "cadillac"],
+  },
+  {
+    id: "team-2",
+    ownerName: "Louie's Lead Foot",
+    logoUrl: "/louies-lead-foot.png",
+    driverIds: ["max_verstappen", "piastri", "norris", "gasly", "albon", "bortoleto", "ocon"],
+    constructorIds: ["mclaren", "red_bull", "alpine"],
+  },
+  {
+    id: "team-3",
+    ownerName: "Wildfire Laps",
+    logoUrl: "/wildfire-laps.png",
+    driverIds: ["russell", "antonelli", "hadjar", "hulkenberg", "lawson", "bearman", "lindblad"],
+    constructorIds: ["ferrari", "aston_martin", "williams"],
+  },
+];
+
+function getRosterForRound(round: number): TeamRoster[] {
+  return round <= REDRAFT_AFTER_ROUND ? ROSTERS_PERIOD_1 : ROSTERS_PERIOD_2;
+}
 
 const getPointsCache = cache(async () => {
   const rounds = await fetchAllRoundsPoints(ROUNDS);
@@ -177,11 +248,21 @@ export async function getTeamsAsync(): Promise<FantasyTeam[]> {
   const getDriverPointsByRound = (driverId: string) => driverPointsByRound[driverId] ?? [];
   const getConstructorPointsByRound = (constructorId: string) => constructorPointsByRound[constructorId] ?? [];
 
-  return TEAM_ROSTERS.map((roster) => {
+  const displayRosters = DISPLAY_PERIOD === 1 ? ROSTERS_PERIOD_1 : ROSTERS_PERIOD_2;
+
+  return displayRosters.map((roster) => {
     const drivers: Driver[] = roster.driverIds.map((id) => {
       const meta = DRIVER_META[id];
       const teamId = meta?.teamId ?? "";
-      const points = getDriverPoints(id);
+      // Points = sum of rounds where this driver was on this team
+      const points = ROUNDS.reduce((acc, r, i) => {
+        const rosterForRound = getRosterForRound(r.round).find((ro) => ro.id === roster.id);
+        if (rosterForRound?.driverIds.includes(id)) {
+          const arr = getDriverPointsByRound(id);
+          return acc + (arr[i] ?? 0);
+        }
+        return acc;
+      }, 0);
       return {
         id,
         name: meta?.name ?? id,
@@ -192,32 +273,47 @@ export async function getTeamsAsync(): Promise<FantasyTeam[]> {
         points,
       };
     });
-    const constructors: Constructor[] = roster.constructorIds.map((id) => ({
-      id,
-      name: CONSTRUCTOR_META[id] ?? id,
-      points: getConstructorPoints(id),
-      teamColour: CONSTRUCTOR_COLOURS[id],
-    }));
-    const totalPoints = drivers.reduce((a, d) => a + d.points, 0) + constructors.reduce((a, c) => a + c.points, 0);
+    const constructors: Constructor[] = roster.constructorIds.map((id) => {
+      const points = ROUNDS.reduce((acc, r, i) => {
+        const rosterForRound = getRosterForRound(r.round).find((ro) => ro.id === roster.id);
+        if (rosterForRound?.constructorIds.includes(id)) {
+          const arr = getConstructorPointsByRound(id);
+          return acc + (arr[i] ?? 0);
+        }
+        return acc;
+      }, 0);
+      return {
+        id,
+        name: CONSTRUCTOR_META[id] ?? id,
+        points,
+        teamColour: CONSTRUCTOR_COLOURS[id],
+      };
+    });
 
+    // Points by round: use the roster active for each round (period 1 for rounds 1-13, period 2 for 14-24)
+    let totalPoints = 0;
     let cumulative = 0;
     const pointsByRound = ROUNDS.map((r, i) => {
-      const driverRoundPts = roster.driverIds.reduce((acc, did) => {
+      const roundNum = r.round;
+      const rosterForRound = getRosterForRound(roundNum).find((ro) => ro.id === roster.id)!;
+      const driverRoundPts = rosterForRound.driverIds.reduce((acc, did) => {
         const arr = getDriverPointsByRound(did);
         return acc + (arr[i] ?? 0);
       }, 0);
-      const constructorRoundPts = roster.constructorIds.reduce((acc, cid) => {
+      const constructorRoundPts = rosterForRound.constructorIds.reduce((acc, cid) => {
         const arr = getConstructorPointsByRound(cid);
         return acc + (arr[i] ?? 0);
       }, 0);
       const roundPoints = driverRoundPts + constructorRoundPts;
       cumulative += roundPoints;
+      totalPoints += roundPoints;
       return { round: r.round, points: roundPoints, cumulative };
     });
 
     return {
       id: roster.id,
       ownerName: roster.ownerName,
+      logoUrl: roster.logoUrl,
       drivers,
       constructors,
       totalPoints,

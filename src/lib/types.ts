@@ -18,6 +18,7 @@ export interface Constructor {
 export interface FantasyTeam {
   id: string;
   ownerName: string;
+  logoUrl?: string;
   drivers: Driver[];
   constructors: Constructor[];
   totalPoints: number;
