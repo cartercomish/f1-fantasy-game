@@ -142,7 +142,7 @@ const CONSTRUCTOR_COLOURS: Record<string, string> = {
   aston_martin: "#006F62",
   haas: "#FFFFFF",
   audi: "#BB0A30",
-  alpine: "#FE8002",
+  alpine: "#005CA9",
   cadillac: "#1A1A1A",
 };
 
