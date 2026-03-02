@@ -146,6 +146,14 @@ const CONSTRUCTOR_COLOURS: Record<string, string> = {
   cadillac: "#1A1A1A",
 };
 
+// League IDs – used for routing and roster selection
+export type LeagueId = "cts" | "sb";
+
+export const LEAGUES: { id: LeagueId; name: string }[] = [
+  { id: "cts", name: "Carter–Terry–Stuart" },
+  { id: "sb", name: "Stuart–Brian" },
+];
+
 // Redraft occurs between round 13 (Hungary, July 24-26) and round 14 (Netherlands, Aug 21-23).
 // Period 1: rounds 1-13 (first half). Period 2: rounds 14-24 (second half, after redraft).
 const REDRAFT_AFTER_ROUND = 13;
@@ -211,8 +219,36 @@ const ROSTERS_PERIOD_2: TeamRoster[] = [
   },
 ];
 
+// Stuart–Brian league (single period, no redraft)
+const ROSTERS_SB: TeamRoster[] = [
+  {
+    id: "stuart",
+    ownerName: "Stuart",
+    logoUrl: "",
+    driverIds: ["russell", "leclerc", "hamilton", "alonso", "hadjar", "gasly", "hulkenberg"],
+    constructorIds: ["ferrari", "red_bull", "aston_martin"],
+  },
+  {
+    id: "brian",
+    ownerName: "Brian",
+    logoUrl: "",
+    driverIds: ["max_verstappen", "piastri", "norris", "antonelli", "albon", "sainz", "bearman"],
+    constructorIds: ["mercedes", "mclaren", "alpine"],
+  },
+];
+
 function getRosterForRound(round: number): TeamRoster[] {
   return round <= REDRAFT_AFTER_ROUND ? ROSTERS_PERIOD_1 : ROSTERS_PERIOD_2;
+}
+
+function getRosterForRoundForLeague(leagueId: LeagueId, round: number): TeamRoster[] {
+  if (leagueId === "sb") return ROSTERS_SB;
+  return getRosterForRound(round);
+}
+
+function getDisplayRostersForLeague(leagueId: LeagueId): TeamRoster[] {
+  if (leagueId === "sb") return ROSTERS_SB;
+  return DISPLAY_PERIOD === 1 ? ROSTERS_PERIOD_1 : ROSTERS_PERIOD_2;
 }
 
 const getPointsCache = cache(async () => {
@@ -232,23 +268,15 @@ export function getRounds(): RoundSummary[] {
   return ROUNDS;
 }
 
-export async function getTeamsAsync(): Promise<FantasyTeam[]> {
+export async function getTeamsAsync(leagueId: LeagueId): Promise<FantasyTeam[]> {
   const pointsCache = await getPointsCache();
   const driverPointsByRound = buildDriverPointsByRound(pointsCache);
   const constructorPointsByRound = buildConstructorPointsByRound(driverPointsByRound);
 
-  const getDriverPoints = (driverId: string) => {
-    const pts = driverPointsByRound[driverId];
-    return pts ? sum(pts) : 0;
-  };
-  const getConstructorPoints = (constructorId: string) => {
-    const pts = constructorPointsByRound[constructorId];
-    return pts ? sum(pts) : 0;
-  };
   const getDriverPointsByRound = (driverId: string) => driverPointsByRound[driverId] ?? [];
   const getConstructorPointsByRound = (constructorId: string) => constructorPointsByRound[constructorId] ?? [];
 
-  const displayRosters = DISPLAY_PERIOD === 1 ? ROSTERS_PERIOD_1 : ROSTERS_PERIOD_2;
+  const displayRosters = getDisplayRostersForLeague(leagueId);
 
   return displayRosters.map((roster) => {
     const drivers: Driver[] = roster.driverIds.map((id) => {
@@ -256,7 +284,7 @@ export async function getTeamsAsync(): Promise<FantasyTeam[]> {
       const teamId = meta?.teamId ?? "";
       // Points = sum of rounds where this driver was on this team
       const points = ROUNDS.reduce((acc, r, i) => {
-        const rosterForRound = getRosterForRound(r.round).find((ro) => ro.id === roster.id);
+        const rosterForRound = getRosterForRoundForLeague(leagueId, r.round).find((ro) => ro.id === roster.id);
         if (rosterForRound?.driverIds.includes(id)) {
           const arr = getDriverPointsByRound(id);
           return acc + (arr[i] ?? 0);
@@ -275,7 +303,7 @@ export async function getTeamsAsync(): Promise<FantasyTeam[]> {
     });
     const constructors: Constructor[] = roster.constructorIds.map((id) => {
       const points = ROUNDS.reduce((acc, r, i) => {
-        const rosterForRound = getRosterForRound(r.round).find((ro) => ro.id === roster.id);
+        const rosterForRound = getRosterForRoundForLeague(leagueId, r.round).find((ro) => ro.id === roster.id);
         if (rosterForRound?.constructorIds.includes(id)) {
           const arr = getConstructorPointsByRound(id);
           return acc + (arr[i] ?? 0);
@@ -295,7 +323,7 @@ export async function getTeamsAsync(): Promise<FantasyTeam[]> {
     let cumulative = 0;
     const pointsByRound = ROUNDS.map((r, i) => {
       const roundNum = r.round;
-      const rosterForRound = getRosterForRound(roundNum).find((ro) => ro.id === roster.id)!;
+      const rosterForRound = getRosterForRoundForLeague(leagueId, roundNum).find((ro) => ro.id === roster.id)!;
       const driverRoundPts = rosterForRound.driverIds.reduce((acc, did) => {
         const arr = getDriverPointsByRound(did);
         return acc + (arr[i] ?? 0);
@@ -322,13 +350,13 @@ export async function getTeamsAsync(): Promise<FantasyTeam[]> {
   });
 }
 
-export async function getTeamByIdAsync(id: string): Promise<FantasyTeam | undefined> {
-  const teams = await getTeamsAsync();
+export async function getTeamByIdAsync(id: string, leagueId: LeagueId): Promise<FantasyTeam | undefined> {
+  const teams = await getTeamsAsync(leagueId);
   return teams.find((t) => t.id === id);
 }
 
-export async function getTopAndBottomDriversAsync(): Promise<{ top: Driver[]; bottom: Driver[] }> {
-  const teams = await getTeamsAsync();
+export async function getTopAndBottomDriversAsync(leagueId: LeagueId): Promise<{ top: Driver[]; bottom: Driver[] }> {
+  const teams = await getTeamsAsync(leagueId);
   const seen = new Set<string>();
   const drivers: Driver[] = [];
   for (const team of teams) {
@@ -346,8 +374,8 @@ export async function getTopAndBottomDriversAsync(): Promise<{ top: Driver[]; bo
   };
 }
 
-export async function getTopAndBottomConstructorsAsync(): Promise<{ top: Constructor[]; bottom: Constructor[] }> {
-  const teams = await getTeamsAsync();
+export async function getTopAndBottomConstructorsAsync(leagueId: LeagueId): Promise<{ top: Constructor[]; bottom: Constructor[] }> {
+  const teams = await getTeamsAsync(leagueId);
   const seen = new Set<string>();
   const constructors: Constructor[] = [];
   for (const team of teams) {

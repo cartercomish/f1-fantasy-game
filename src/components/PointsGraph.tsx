@@ -13,9 +13,24 @@ import {
 import { useMemo } from "react";
 import type { FantasyTeam, RoundSummary } from "@/lib/types";
 
-const TEAM_COLORS = ["#FF1E00", "#03DAC6", "#F58020"];
+const TEAM_COLORS: Record<string, string> = {
+  "team-1": "#FF1E00",
+  "team-2": "#03DAC6",
+  "team-3": "#F58020",
+  stuart: "#03DAC6",
+  brian: "#F58020",
+};
+const FALLBACK_COLORS = ["#FF1E00", "#03DAC6", "#F58020"];
 
-export function PointsGraph({ teams, rounds }: { teams: FantasyTeam[]; rounds: RoundSummary[] }) {
+export function PointsGraph({
+  teams,
+  rounds,
+  leagueId,
+}: {
+  teams: FantasyTeam[];
+  rounds: RoundSummary[];
+  leagueId?: string;
+}) {
   const data = useMemo(() => {
     return rounds.map((r, i) => {
       const point: Record<string, string | number> = {
@@ -43,16 +58,19 @@ export function PointsGraph({ teams, rounds }: { teams: FantasyTeam[]; rounds: R
               labelStyle={{ color: "#fff" }}
             />
             <Legend />
-            {teams.map((t, i) => (
-              <Line
-                key={t.id}
-                type="monotone"
-                dataKey={t.ownerName}
-                stroke={TEAM_COLORS[i % TEAM_COLORS.length]}
-                strokeWidth={2}
-                dot={{ fill: TEAM_COLORS[i % TEAM_COLORS.length], r: 3 }}
-              />
-            ))}
+            {teams.map((t, i) => {
+              const color = TEAM_COLORS[t.id] ?? FALLBACK_COLORS[i % FALLBACK_COLORS.length];
+              return (
+                <Line
+                  key={t.id}
+                  type="monotone"
+                  dataKey={t.ownerName}
+                  stroke={color}
+                  strokeWidth={2}
+                  dot={{ fill: color, r: 3 }}
+                />
+              );
+            })}
           </LineChart>
         </ResponsiveContainer>
       </div>
