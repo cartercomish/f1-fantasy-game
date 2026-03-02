@@ -219,19 +219,19 @@ const ROSTERS_PERIOD_2: TeamRoster[] = [
   },
 ];
 
-// Stuart–Brian league (single period, no redraft)
+// Stuart–Brian league (single period, no redraft) – Baker & The Goods
 const ROSTERS_SB: TeamRoster[] = [
   {
     id: "stuart",
-    ownerName: "Stuart",
-    logoUrl: "",
+    ownerName: "Baker",
+    logoUrl: "/baker.png",
     driverIds: ["russell", "leclerc", "hamilton", "alonso", "hadjar", "gasly", "hulkenberg"],
     constructorIds: ["ferrari", "red_bull", "aston_martin"],
   },
   {
     id: "brian",
-    ownerName: "Brian",
-    logoUrl: "",
+    ownerName: "The Goods",
+    logoUrl: "/the-goods.png",
     driverIds: ["max_verstappen", "piastri", "norris", "antonelli", "albon", "sainz", "bearman"],
     constructorIds: ["mercedes", "mclaren", "alpine"],
   },

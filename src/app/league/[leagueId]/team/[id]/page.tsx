@@ -30,7 +30,7 @@ export default async function LeagueTeamPage({
       <div className="flex items-center gap-4">
         {team.logoUrl && (
           <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0 flex-shrink-0">
-            <Image src={team.logoUrl} alt={team.ownerName} fill className="object-cover object-center" sizes="64px" />
+            <Image src={team.logoUrl} alt={team.ownerName} fill className="object-cover object-center" sizes="128px" quality={95} />
           </div>
         )}
         <div>

@@ -33,10 +33,21 @@ export function PodiumStandings({ teams, leagueId }: { teams: FantasyTeam[]; lea
               href={teamHref(first?.id ?? "")}
               className="h-28 w-28 bg-[#1E1E28] border border-white/10 rounded-t-lg flex items-center justify-center mb-2 overflow-hidden shrink-0 relative block hover:border-white/25 hover:opacity-90 transition-all"
             >
-              <span className="text-5xl font-bold text-[#8F8F9D]">
-                {first?.id?.charAt(0).toUpperCase() ?? "S"}
-              </span>
-              <span className="absolute top-1 left-1 w-8 h-8 rounded flex items-center justify-center text-base font-bold shiny-badge-gold text-gray-900">1</span>
+              {first?.logoUrl ? (
+                <>
+                  <div className="w-full h-full relative">
+                    <Image src={first.logoUrl} alt={first.ownerName} fill className="object-cover object-center" sizes="224px" quality={95} />
+                  </div>
+                  <span className="absolute top-1 left-1 w-8 h-8 rounded flex items-center justify-center text-base font-bold shiny-badge-gold text-gray-900">1</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-5xl font-bold text-[#8F8F9D]">
+                    {first?.id?.charAt(0).toUpperCase() ?? "S"}
+                  </span>
+                  <span className="absolute top-1 left-1 w-8 h-8 rounded flex items-center justify-center text-base font-bold shiny-badge-gold text-gray-900">1</span>
+                </>
+              )}
             </Link>
             <Link
               href={teamHref(first?.id ?? "")}
@@ -55,10 +66,21 @@ export function PodiumStandings({ teams, leagueId }: { teams: FantasyTeam[]; lea
               href={teamHref(second?.id ?? "")}
               className="h-28 w-28 bg-[#1E1E28] border border-white/10 rounded-t-lg flex items-center justify-center mb-2 overflow-hidden shrink-0 relative block hover:border-white/25 hover:opacity-90 transition-all"
             >
-              <span className="text-5xl font-bold text-[#8F8F9D]">
-                {second?.id?.charAt(0).toUpperCase() ?? "B"}
-              </span>
-              <span className="absolute top-1 left-1 w-7 h-7 rounded flex items-center justify-center text-sm font-bold shiny-badge-silver text-gray-900">2</span>
+              {second?.logoUrl ? (
+                <>
+                  <div className="w-full h-full relative">
+                    <Image src={second.logoUrl} alt={second.ownerName} fill className="object-cover object-center" sizes="224px" quality={95} />
+                  </div>
+                  <span className="absolute top-1 left-1 w-7 h-7 rounded flex items-center justify-center text-sm font-bold shiny-badge-silver text-gray-900">2</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-5xl font-bold text-[#8F8F9D]">
+                    {second?.id?.charAt(0).toUpperCase() ?? "B"}
+                  </span>
+                  <span className="absolute top-1 left-1 w-7 h-7 rounded flex items-center justify-center text-sm font-bold shiny-badge-silver text-gray-900">2</span>
+                </>
+              )}
             </Link>
             <Link
               href={teamHref(second?.id ?? "")}
@@ -91,7 +113,7 @@ export function PodiumStandings({ teams, leagueId }: { teams: FantasyTeam[]; lea
             {second?.logoUrl ? (
               <>
                 <div className="w-full h-full relative">
-                  <Image src={second.logoUrl} alt={second.ownerName} fill className="object-cover object-center" sizes="96px" />
+                  <Image src={second.logoUrl} alt={second.ownerName} fill className="object-cover object-center" sizes="192px" quality={95} />
                 </div>
                 <span className="absolute top-1 left-1 w-7 h-7 rounded flex items-center justify-center text-sm font-bold shiny-badge-silver text-gray-900">2</span>
               </>
@@ -120,7 +142,7 @@ export function PodiumStandings({ teams, leagueId }: { teams: FantasyTeam[]; lea
             {first?.logoUrl ? (
               <>
                 <div className="w-full h-full relative">
-                  <Image src={first.logoUrl} alt={first.ownerName} fill className="object-cover object-center" sizes="128px" />
+                  <Image src={first.logoUrl} alt={first.ownerName} fill className="object-cover object-center" sizes="256px" quality={95} />
                 </div>
                 <span className="absolute top-1 left-1 w-8 h-8 rounded flex items-center justify-center text-base font-bold shiny-badge-gold text-gray-900">1</span>
               </>
@@ -149,7 +171,7 @@ export function PodiumStandings({ teams, leagueId }: { teams: FantasyTeam[]; lea
             {third?.logoUrl ? (
               <>
                 <div className="w-full h-full relative">
-                  <Image src={third.logoUrl} alt={third.ownerName} fill className="object-cover object-center" sizes="64px" />
+                  <Image src={third.logoUrl} alt={third.ownerName} fill className="object-cover object-center" sizes="128px" quality={95} />
                 </div>
                 <span className="absolute top-0.5 left-0.5 w-5 h-5 rounded flex items-center justify-center text-xs font-bold shiny-badge-bronze text-white">3</span>
               </>
