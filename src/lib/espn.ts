@@ -50,7 +50,8 @@ export interface EspnCompetitor {
 
 export interface EspnCompetition {
   id: string;
-  type?: { text?: string; abbreviation?: string };
+  /** ESPN uses id "3" for the grand prix race session in event payloads */
+  type?: { id?: string; text?: string; abbreviation?: string };
   competitors?: EspnCompetitor[];
 }
 
@@ -58,6 +59,41 @@ export interface EspnEvent {
   id: string;
   name?: string;
   competitions?: EspnCompetition[];
+}
+
+function findMainRaceCompetition(
+  competitions: EspnCompetition[] | undefined
+): EspnCompetition | undefined {
+  if (!competitions?.length) return undefined;
+
+  const isRaceSession = (c: EspnCompetition) => {
+    const t = c.type;
+    if (!t) return false;
+    if (t.id === "3") return true;
+    const name = (t.text ?? "").toLowerCase();
+    const abbr = (t.abbreviation ?? "").toLowerCase();
+    return name === "race" || abbr === "race";
+  };
+
+  const raceSessions = competitions.filter(isRaceSession).filter((c) => (c.competitors?.length ?? 0) > 0);
+  if (raceSessions.length > 0) {
+    // Sprint + GP weekends: take the last "Race" session (Sunday GP)
+    return raceSessions[raceSessions.length - 1];
+  }
+
+  const bigGrid = competitions.filter((c) => (c.competitors?.length ?? 0) >= 15);
+  return bigGrid[bigGrid.length - 1];
+}
+
+/** Prefer competitor id; fall back to athlete id parsed from $ref */
+function resolveEspnAthleteId(comp: EspnCompetitor): string | undefined {
+  if (comp.id && ESPN_ATHLETE_TO_DRIVER[comp.id]) return comp.id;
+  const ref = comp.athlete?.$ref;
+  if (ref) {
+    const m = /\/athletes\/(\d+)/.exec(ref);
+    if (m?.[1] && ESPN_ATHLETE_TO_DRIVER[m[1]]) return m[1];
+  }
+  return comp.id;
 }
 
 /**
@@ -72,11 +108,7 @@ export async function fetchRaceResults(espnRaceId: string): Promise<RaceResult[]
   }
   const event: EspnEvent = await res.json();
 
-  const raceCompetition = event.competitions?.find(
-    (c) =>
-      c.type?.text === "Race" ||
-      c.type?.abbreviation === "Race"
-  );
+  const raceCompetition = findMainRaceCompetition(event.competitions);
 
   if (!raceCompetition?.competitors) {
     return [];
@@ -85,7 +117,8 @@ export async function fetchRaceResults(espnRaceId: string): Promise<RaceResult[]
   const results: RaceResult[] = [];
 
   for (const comp of raceCompetition.competitors) {
-    const athleteId = comp.id;
+    const athleteId = resolveEspnAthleteId(comp);
+    if (!athleteId) continue;
     const driverId = ESPN_ATHLETE_TO_DRIVER[athleteId];
     if (!driverId) continue; // skip unmapped drivers (e.g. perez, bottas until we have IDs)
 
