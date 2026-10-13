@@ -6,31 +6,31 @@ import { fetchAllRoundsPoints } from "./espn";
 const SEASON_YEAR = 2026;
 
 // ESPN race IDs for 2026 season (from espn.com/f1/race/_/id/{id})
+// April Bahrain + Saudi canceled; Bahrain rescheduled as Sepang (Malaysia) Oct 4.
 const ROUNDS: RoundSummary[] = [
   { round: 1, roundName: "Australia", date: "2026-03-07", espnRaceId: "600057427" },
   { round: 2, roundName: "China", date: "2026-03-15", espnRaceId: "600057428" },
   { round: 3, roundName: "Japan", date: "2026-03-29", espnRaceId: "600057429" },
-  { round: 4, roundName: "Bahrain", date: "2026-04-12", espnRaceId: "600057430" },
-  { round: 5, roundName: "Saudi Arabia", date: "2026-04-19", espnRaceId: "600057431" },
-  { round: 6, roundName: "Miami", date: "2026-05-03", espnRaceId: "600057432" },
-  { round: 7, roundName: "Canada", date: "2026-05-24", espnRaceId: "600057433" },
-  { round: 8, roundName: "Monaco", date: "2026-06-07", espnRaceId: "600057434" },
-  { round: 9, roundName: "Barcelona-Catalunya", date: "2026-06-14", espnRaceId: "600057435" },
-  { round: 10, roundName: "Austria", date: "2026-06-28", espnRaceId: "600057436" },
-  { round: 11, roundName: "British", date: "2026-07-05", espnRaceId: "600057437" },
-  { round: 12, roundName: "Belgian", date: "2026-07-19", espnRaceId: "600057439" },
-  { round: 13, roundName: "Hungarian", date: "2026-07-26", espnRaceId: "600057440" },
-  { round: 14, roundName: "Dutch", date: "2026-08-23", espnRaceId: "600057441" },
-  { round: 15, roundName: "Italian", date: "2026-09-06", espnRaceId: "600057442" },
-  { round: 16, roundName: "Spanish", date: "2026-09-13", espnRaceId: "600057443" },
-  { round: 17, roundName: "Azerbaijan", date: "2026-09-26", espnRaceId: "600057444" },
-  { round: 18, roundName: "Singapore", date: "2026-10-11", espnRaceId: "600057445" },
-  { round: 19, roundName: "United States", date: "2026-10-25", espnRaceId: "600057446" },
-  { round: 20, roundName: "Mexico City", date: "2026-11-01", espnRaceId: "600057447" },
-  { round: 21, roundName: "São Paulo", date: "2026-11-08", espnRaceId: "600057448" },
-  { round: 22, roundName: "Las Vegas", date: "2026-11-21", espnRaceId: "600057449" },
-  { round: 23, roundName: "Qatar", date: "2026-11-29", espnRaceId: "600057450" },
-  { round: 24, roundName: "Abu Dhabi", date: "2026-12-06", espnRaceId: "600057451" },
+  { round: 4, roundName: "Miami", date: "2026-05-03", espnRaceId: "600057432" },
+  { round: 5, roundName: "Canada", date: "2026-05-24", espnRaceId: "600057433" },
+  { round: 6, roundName: "Monaco", date: "2026-06-07", espnRaceId: "600057434" },
+  { round: 7, roundName: "Barcelona-Catalunya", date: "2026-06-14", espnRaceId: "600057435" },
+  { round: 8, roundName: "Austria", date: "2026-06-28", espnRaceId: "600057436" },
+  { round: 9, roundName: "British", date: "2026-07-05", espnRaceId: "600057437" },
+  { round: 10, roundName: "Belgian", date: "2026-07-19", espnRaceId: "600057439" },
+  { round: 11, roundName: "Hungarian", date: "2026-07-26", espnRaceId: "600057440" },
+  { round: 12, roundName: "Dutch", date: "2026-08-23", espnRaceId: "600057441" },
+  { round: 13, roundName: "Italian", date: "2026-09-06", espnRaceId: "600057442" },
+  { round: 14, roundName: "Spanish", date: "2026-09-13", espnRaceId: "600057443" },
+  { round: 15, roundName: "Azerbaijan", date: "2026-09-26", espnRaceId: "600057444" },
+  { round: 16, roundName: "Bahrain (Malaysia)", date: "2026-10-04", espnRaceId: "600060990" },
+  { round: 17, roundName: "Singapore", date: "2026-10-11", espnRaceId: "600057445" },
+  { round: 18, roundName: "United States", date: "2026-10-25", espnRaceId: "600057446" },
+  { round: 19, roundName: "Mexico City", date: "2026-11-01", espnRaceId: "600057447" },
+  { round: 20, roundName: "São Paulo", date: "2026-11-08", espnRaceId: "600057448" },
+  { round: 21, roundName: "Las Vegas", date: "2026-11-21", espnRaceId: "600057449" },
+  { round: 22, roundName: "Qatar", date: "2026-11-29", espnRaceId: "600057450" },
+  { round: 23, roundName: "Abu Dhabi", date: "2026-12-06", espnRaceId: "600057451" },
 ];
 
 // 2026 driver grid (11 teams, 22 drivers)
@@ -154,9 +154,9 @@ export const LEAGUES: { id: LeagueId; name: string }[] = [
   { id: "sb", name: "Stuart–Brian" },
 ];
 
-// Redraft occurs between round 13 (Hungary, July 24-26) and round 14 (Netherlands, Aug 21-23).
-// Period 1: rounds 1-13 (first half). Period 2: rounds 14-24 (second half, after redraft).
-const REDRAFT_AFTER_ROUND = 13;
+// Redraft occurs between Hungary and Netherlands.
+// Period 1: rounds 1-11 (through Hungary). Period 2: rounds 12-23 (Dutch onward).
+const REDRAFT_AFTER_ROUND = 11;
 
 // Which roster to show on team pages. Change to 2 after the mid-season redraft.
 const DISPLAY_PERIOD: 1 | 2 = 1;
@@ -169,7 +169,7 @@ interface TeamRoster {
   constructorIds: string[];
 }
 
-// Period 1: Initial draft (rounds 1-13)
+// Period 1: Initial draft (rounds 1-11)
 const ROSTERS_PERIOD_1: TeamRoster[] = [
   {
     id: "team-1",
@@ -194,7 +194,7 @@ const ROSTERS_PERIOD_1: TeamRoster[] = [
   },
 ];
 
-// Period 2: After redraft (rounds 14-24). Update this block after the mid-season redraft.
+// Period 2: After redraft (rounds 12-23). Update this block after the mid-season redraft.
 const ROSTERS_PERIOD_2: TeamRoster[] = [
   {
     id: "team-1",
@@ -318,7 +318,7 @@ export async function getTeamsAsync(leagueId: LeagueId): Promise<FantasyTeam[]> 
       };
     });
 
-    // Points by round: use the roster active for each round (period 1 for rounds 1-13, period 2 for 14-24)
+    // Points by round: use the roster active for each round (period 1 for 1-11, period 2 for 12-23)
     let totalPoints = 0;
     let cumulative = 0;
     const pointsByRound = ROUNDS.map((r, i) => {

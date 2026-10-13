@@ -1,5 +1,5 @@
 {
-  "_comment": "Driver points by round. Keys are round numbers (1-24). Update via /api/refresh POST or manual edit.",
+  "_comment": "Driver points by round. Keys are round numbers (1-23). Update via /api/refresh POST or manual edit.",
   "rounds": {
     "1": {
       "norris": 25,
